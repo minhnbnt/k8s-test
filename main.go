@@ -3,18 +3,21 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand/v2"
 	"net/http"
 	"os"
 )
 
 func main() {
 
-	id := rand.Int()
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Println("Failed to get hostname:", err)
+		hostname = "unknown"
+	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
-		_, err := fmt.Fprintf(w, "Hello from server %v!", id)
+		_, err := fmt.Fprintf(w, "Hello from server %v!", hostname)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,6 +32,6 @@ func main() {
 	address := ":" + port
 
 	if err := http.ListenAndServe(address, nil); err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to listen to address:", err)
 	}
 }
